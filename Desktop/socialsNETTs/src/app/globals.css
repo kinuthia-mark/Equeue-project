@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+/* ── socialNET (Atlas) — DARK is the default theme ───────────────────────── */
+@theme {
+  --color-canvas: #0b0c0e;
+  --color-surface: #101114;
+  --color-surface-2: #15161b;
+  --color-sidebar: #0e0f12;
+  --color-subtle: rgba(255, 255, 255, 0.05);
+  --color-subtle-2: rgba(255, 255, 255, 0.1);
+  --color-border: rgba(255, 255, 255, 0.07);
+  --color-border-strong: rgba(255, 255, 255, 0.13);
+
+  --color-ink: #e7e7ea;
+  --color-muted: #9a9aa2;
+  --color-faint: #6b6b73;
+
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-primary-soft: rgba(99, 102, 241, 0.16);
+  --color-primary-ink: #a5b4fc;
+
+  --color-positive: #22c55e;
+  --color-positive-soft: rgba(34, 197, 94, 0.14);
+  --color-warning: #f59e0b;
+  --color-warning-soft: rgba(245, 158, 11, 0.14);
+  --color-critical: #ef4444;
+  --color-critical-soft: rgba(239, 68, 68, 0.14);
+  --color-info: #6366f1;
+  --color-info-soft: rgba(99, 102, 241, 0.14);
+  --color-neutral: #9aa0aa;
+  --color-neutral-soft: rgba(140, 145, 155, 0.16);
+
+  --color-track: rgba(255, 255, 255, 0.07);
+
+  --radius-card: 14px;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-pop: 0 30px 80px -20px rgba(0, 0, 0, 0.6);
+
+  --font-sans: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+/* ── Light theme overrides ───────────────────────────────────────────────── */
+html[data-theme="light"] {
+  --color-canvas: #f5f5f6;
+  --color-surface: #ffffff;
+  --color-surface-2: #ffffff;
+  --color-sidebar: #fbfbfc;
+  --color-subtle: #f0f0f2;
+  --color-subtle-2: #e7e7ea;
+  --color-border: #e7e7ea;
+  --color-border-strong: #d6d6db;
+
+  --color-ink: #15151a;
+  --color-muted: #5f5f68;
+  --color-faint: #9a9aa2;
+
+  --color-primary-soft: #eeeefc;
+  --color-primary-ink: #4f46e5;
+
+  --color-positive: #16a34a;
+  --color-positive-soft: #e7f6ec;
+  --color-warning: #d97706;
+  --color-warning-soft: #fdf1e1;
+  --color-critical: #dc2626;
+  --color-critical-soft: #fbe9e9;
+  --color-info: #2563eb;
+  --color-info-soft: #e8f0fe;
+  --color-neutral: #64748b;
+  --color-neutral-soft: #eef1f4;
+
+  --color-track: #eeeef0;
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html,
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono,
+  .tabular {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--color-primary) 35%, transparent);
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-strong) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border-radius: 9px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer utilities {
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+  .glass {
+    background: color-mix(in srgb, var(--color-canvas) 72%, transparent);
+    backdrop-filter: blur(12px);
+  }
+  .ring-focus:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 35%, transparent);
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .density-compact {
+    zoom: 0.9;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-in {
+  animation: fadeInUp 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+.live-dot {
+  animation: pulseDot 1.8s ease-in-out infinite;
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-subtle);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, var(--color-subtle-2), transparent);
+  animation: shimmer 1.4s infinite;
+}
