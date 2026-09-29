@@ -1,6 +1,0 @@
-# Uploaded files must never be executed as code.
-<IfModule mod_authz_core.c>
-    <FilesMatch "\.(php|phtml|php[0-9]|phar|pl|cgi|sh)$">
-        Require all denied
-    </FilesMatch>
-</IfModule>
