@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 class CreateOfficer extends Command
 {
     protected $signature = 'officer:create {email} {--name=Officer}';
+
     protected $description = 'Create an officer account that can use the dashboard';
 
     public function handle(): int
@@ -16,6 +17,7 @@ class CreateOfficer extends Command
 
         if (User::where('email', $email)->exists()) {
             $this->error("A user with {$email} already exists.");
+
             return self::FAILURE;
         }
 
@@ -23,6 +25,7 @@ class CreateOfficer extends Command
 
         if (strlen((string) $password) < 8) {
             $this->error('Password must be at least 8 characters.');
+
             return self::FAILURE;
         }
 

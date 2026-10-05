@@ -19,7 +19,7 @@ class QueueEntryFactory extends Factory
             'email' => fake()->safeEmail(),
             'service' => $service,
             'service_number' => $n,
-            'queue_number' => config("services_list.services.$service.prefix") . '-' . str_pad($n, 3, '0', STR_PAD_LEFT),
+            'queue_number' => config("services_list.services.$service.prefix").'-'.str_pad($n, 3, '0', STR_PAD_LEFT),
             'status' => QueueEntry::WAITING,
         ];
     }
