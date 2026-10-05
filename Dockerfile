@@ -22,7 +22,7 @@ RUN chmod +x /usr/local/bin/entrypoint \
     && rm -f bootstrap/cache/*.php \
     && addgroup -S app && adduser -S app -G app \
     && mkdir -p database storage/db storage/logs storage/framework/cache storage/framework/sessions storage/framework/views \
-    && chown -R app:app database storage bootstrap/cache
+    && chown -R app:app /app
 
 USER app
 EXPOSE 8000
