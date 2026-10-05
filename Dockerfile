@@ -1,8 +1,11 @@
 # eQueue container: PHP 8.3 with SQLite, served by `php artisan serve`.
 # Good for demos and evaluation. For production, put PHP-FPM behind Nginx.
 
-# Stage 1: install Composer dependencies (no dev packages).
-FROM composer:2 AS vendor
+# Stage 1: install Composer dependencies (no dev packages). Composer runs on
+# the same PHP version as the runtime so the lock file resolves the same way.
+FROM php:8.3-cli-alpine AS vendor
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN apk add --no-cache unzip
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-interaction --no-scripts --prefer-dist --no-autoloader
