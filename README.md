@@ -1,5 +1,10 @@
 # eQueue
 
+[![tests](https://github.com/kinuthia-mark/Equeue-project/actions/workflows/tests.yml/badge.svg)](https://github.com/kinuthia-mark/Equeue-project/actions/workflows/tests.yml)
+![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white)
+![License: MIT](https://img.shields.io/badge/license-MIT-blue)
 
 A digital queue management system for government service offices (passports, visas, permits).
 Applicants join a queue from their phone and watch their place in line update live.
@@ -14,7 +19,7 @@ Built with **Laravel 12**, **Bootstrap 5** and **SQLite**.
 - **Officer dashboard.** One queue per service, with *Call Next* and *Mark as Complete*.
 - **Email notification** when you are called (queued, so a mail problem never blocks the officer).
 - **Secure by default.** No public sign-up, unguessable status links, CSRF protection, rate-limited joining.
-- **Tested.** Feature tests run on every push through GitHub Actions.
+- **Tested.** 14 feature tests run on every push through GitHub Actions, on PHP 8.2 and 8.3.
 
 ## How it works
 
@@ -117,8 +122,8 @@ flowchart TD
 Requirements: PHP 8.2+ with the `sqlite3` extension, and Composer.
 
 ```bash
-git clone https://github.com/kinuthia-mark/final_is.git
-cd final_is
+git clone https://github.com/kinuthia-mark/Equeue-project.git
+cd Equeue-project
 
 composer install
 cp .env.example .env
@@ -189,4 +194,8 @@ The tests cover joining, validation, per-service numbering, unguessable status l
 
 ## License
 
-MIT
+MIT. See [LICENSE](LICENSE).
+
+## Author
+
+**Mark Kinuthia** - [github.com/kinuthia-mark](https://github.com/kinuthia-mark)
