@@ -14,9 +14,7 @@ class NowServing extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public QueueEntry $entry)
-    {
-    }
+    public function __construct(public QueueEntry $entry) {}
 
     public function envelope(): Envelope
     {

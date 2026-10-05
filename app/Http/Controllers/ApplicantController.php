@@ -11,7 +11,16 @@ class ApplicantController extends Controller
 {
     public function showForm()
     {
-        return view('applicant.form', ['services' => config('services_list.services')]);
+        $services = config('services_list.services');
+
+        // Show how long each queue is before someone picks a service.
+        foreach ($services as $slug => &$service) {
+            $service['waiting'] = QueueEntry::where('service', $slug)->where('status', QueueEntry::WAITING)->count();
+            $service['estimate'] = (int) round($service['waiting'] * QueueEntry::averageServiceMinutes($slug));
+        }
+        unset($service);
+
+        return view('applicant.form', ['services' => $services]);
     }
 
     public function submit(Request $request)
@@ -50,10 +59,23 @@ class ApplicantController extends Controller
 
         return response()->json([
             'status' => $entry->status,
-            'status_label' => str_replace('_', ' ', ucfirst($entry->status)),
+            'status_label' => $entry->statusLabel(),
             'ahead' => $data['ahead'],
             'now_serving' => $data['nowServing']?->queue_number,
+            'estimated_wait_minutes' => $data['estimate'],
         ]);
+    }
+
+    /** Lets an applicant give up their place so the queue moves faster for others. */
+    public function leave(QueueEntry $entry)
+    {
+        if ($entry->status !== QueueEntry::WAITING) {
+            return back()->with('error', 'You can only leave the queue while you are still waiting.');
+        }
+
+        $entry->update(['status' => QueueEntry::CANCELLED]);
+
+        return redirect()->route('status', $entry)->with('success', 'You have left the queue.');
     }
 
     private function statusData(QueueEntry $entry): array
@@ -62,6 +84,7 @@ class ApplicantController extends Controller
             'entry' => $entry,
             'nowServing' => QueueEntry::nowServing($entry->service),
             'ahead' => $entry->peopleAhead(),
+            'estimate' => $entry->estimatedWaitMinutes(),
         ];
     }
 }
