@@ -23,10 +23,21 @@ class OfficerController extends Controller
                     ->whereIn('status', [QueueEntry::WAITING, QueueEntry::IN_SERVICE])
                     ->orderBy('id')
                     ->get(),
+                'average' => QueueEntry::averageServiceMinutes($slug),
             ];
         }
 
-        return view('officer.dashboard', compact('queues'));
+        // Headline numbers for the top of the dashboard.
+        $stats = [
+            'waiting' => QueueEntry::where('status', QueueEntry::WAITING)->count(),
+            'in_service' => QueueEntry::where('status', QueueEntry::IN_SERVICE)->count(),
+            'served_today' => QueueEntry::where('status', QueueEntry::COMPLETED)
+                ->where('completed_at', '>=', now()->startOfDay())
+                ->count(),
+            'average_today' => $this->averageMinutesToday(),
+        ];
+
+        return view('officer.dashboard', compact('queues', 'stats'));
     }
 
     public function callNext(Request $request)
@@ -44,7 +55,7 @@ class OfficerController extends Controller
                 ->lockForUpdate()
                 ->first();
 
-            $entry?->update(['status' => QueueEntry::IN_SERVICE]);
+            $entry?->update(['status' => QueueEntry::IN_SERVICE, 'called_at' => now()]);
 
             return $entry;
         });
@@ -69,8 +80,19 @@ class OfficerController extends Controller
             return back()->with('error', 'Only someone who is being served can be completed.');
         }
 
-        $entry->update(['status' => QueueEntry::COMPLETED]);
+        $entry->update(['status' => QueueEntry::COMPLETED, 'completed_at' => now()]);
 
         return back()->with('success', "{$entry->queue_number} marked as complete.");
+    }
+
+    /** Average minutes at the counter for everyone completed today, or null. */
+    private function averageMinutesToday(): ?float
+    {
+        $today = QueueEntry::where('status', QueueEntry::COMPLETED)
+            ->where('completed_at', '>=', now()->startOfDay())
+            ->whereNotNull('called_at')
+            ->get(['called_at', 'completed_at']);
+
+        return $today->isEmpty() ? null : round($today->avg(fn ($e) => $e->serviceMinutes()), 1);
     }
 }
