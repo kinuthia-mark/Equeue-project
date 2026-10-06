@@ -4,13 +4,63 @@ on: [push, pull_request]
 
 jobs:
   phpunit:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, sqlite3, pdo_sqlite
+          coverage: none
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+      - run: composer validate --no-check-publish
+      - run: composer install --no-interaction --prefer-dist
+      - run: cp .env.example .env && php artisan key:generate
+      - run: php artisan test
+
+  style:
+    name: Code style (Laravel Pint)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          extensions: mbstring, sqlite3, pdo_sqlite
+          coverage: none
       - run: composer install --no-interaction --prefer-dist
-      - run: cp .env.example .env && php artisan key:generate
-      - run: php artisan test
+      - run: vendor/bin/pint --test
+
+  docker:
+    name: Docker image starts and serves pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: docker build -t equeue:ci .
+      - name: Run with demo data
+        run: docker run -d --name equeue -p 8000:8000 -e DEMO_DATA=1 equeue:ci
+      - name: Wait for the health check route
+        run: |
+          for i in $(seq 1 30); do
+            curl -fs http://127.0.0.1:8000/up > /dev/null && exit 0
+            sleep 2
+          done
+          docker logs equeue
+          exit 1
+      - name: Pages respond and show the demo queues
+        run: |
+          curl -fs http://127.0.0.1:8000/ | grep -q "Join the Queue"
+          curl -fs http://127.0.0.1:8000/board | grep -q "Now Serving"
+          curl -fs http://127.0.0.1:8000/board/json | grep -q '"now_serving":"PA-'
+      - name: Container logs
+        if: always()
+        run: docker logs equeue

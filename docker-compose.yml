@@ -1,0 +1,15 @@
+# Run eQueue with demo data:  docker compose up --build
+# Then open http://localhost:8000 (officer login: officer@example.com / password)
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DEMO_DATA: "1"
+      DB_DATABASE: /app/storage/db/database.sqlite
+    volumes:
+      - equeue-db:/app/storage/db
+
+volumes:
+  equeue-db:
