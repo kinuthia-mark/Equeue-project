@@ -92,7 +92,15 @@ Open <http://localhost:8000>. The compose file loads demo data: five services wi
 
 The SQLite database lives in a named volume (`equeue-db`), so queues survive a restart. `docker compose down -v` resets everything.
 
-> The container runs `php artisan serve`, which is fine for demos and evaluation. For production, run PHP-FPM behind Nginx and set `APP_ENV=production`.
+The image is production-style:
+
+- **Apache + PHP 8.3** serving only Laravel's `public/` folder, with OPcache on and PHP's production `php.ini`
+- `APP_ENV=production` and `APP_DEBUG=false` by default, so errors never show stack traces to visitors
+- config, routes and views are cached at start-up
+- Apache and PHP version banners are switched off
+- a health check on Laravel's `/up` route
+
+`DEMO_DATA=1` (set in the compose file) only adds the demo officer and sample queues.
 
 ---
 
@@ -304,7 +312,7 @@ flowchart TD
 | `database/seeders/DatabaseSeeder.php` | Demo officer and realistic sample queues (local only) |
 | `resources/views/board.blade.php` | The TV display, a standalone page |
 | `tests/Feature/` | `QueueTest` (core flow) and `TimingAndBoardTest` (estimates, leaving, board) |
-| `Dockerfile`, `docker-compose.yml`, `docker/entrypoint.sh` | Container build and first-start setup |
+| `Dockerfile`, `docker-compose.yml`, `docker/entrypoint.sh` | Apache image build and first-start setup (env file, key, migrations, caches) |
 
 ---
 
